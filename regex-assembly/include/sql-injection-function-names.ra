@@ -69,6 +69,7 @@ extract
 extractvalue
 field_in_set
 find_in_set
+format_bytes
 found_rows
 from_base64
 from_days
