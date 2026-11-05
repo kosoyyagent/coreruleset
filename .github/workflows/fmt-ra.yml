@@ -16,19 +16,20 @@ jobs:
           ref: ${{ inputs.branch }}
       - name: install crs-toolchain
         run: |
+          cd /tmp
           curl -sL -o t.tgz https://github.com/coreruleset/crs-toolchain/releases/download/v2.10.0/crs-toolchain_2.10.0_linux_amd64.tar.gz
           tar xzf t.tgz
-          ./crs-toolchain --version || true
-          sudo mv crs-toolchain /usr/local/bin/ || mv crs-toolchain $HOME/bin/ && mkdir -p $HOME/bin
-      - name: format include
+          sudo mv crs-toolchain /usr/local/bin/
+      - name: format all
         run: |
-          crs-toolchain regex format mysql-charset-names || crs-toolchain regex format --all
           git status --porcelain
-          git diff
+          crs-toolchain regex format --all
+          git status --porcelain
+          git diff --stat
       - name: commit
         run: |
           git config user.name "kosoyyagent"
           git config user.email "kosoyyagent@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || git commit -m "chore(formatting): crs-toolchain format mysql-charset-names"
+          git add -A -- regex-assembly
+          git diff --cached --quiet || git commit -m "chore(formatting): crs-toolchain format --all"
           git push origin HEAD:${{ inputs.branch }}
