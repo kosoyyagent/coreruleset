@@ -22,7 +22,6 @@ jobs:
           sudo mv crs-toolchain /usr/local/bin/ || mv crs-toolchain $HOME/bin/ && mkdir -p $HOME/bin
       - name: format include
         run: |
-          cd regex-assembly
           crs-toolchain regex format mysql-charset-names || crs-toolchain regex format --all
           git status --porcelain
           git diff
