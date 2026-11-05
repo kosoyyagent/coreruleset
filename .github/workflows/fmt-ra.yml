@@ -14,22 +14,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branch }}
-      - name: install crs-toolchain
+      - name: install crs-toolchain 2.6.0
         run: |
           cd /tmp
-          curl -sL -o t.tgz https://github.com/coreruleset/crs-toolchain/releases/download/v2.10.0/crs-toolchain_2.10.0_linux_amd64.tar.gz
+          curl -sL -o t.tgz https://github.com/coreruleset/crs-toolchain/releases/download/v2.6.0/crs-toolchain_2.6.0_linux_amd64.tar.gz
           tar xzf t.tgz
           sudo mv crs-toolchain /usr/local/bin/
-      - name: format all
+      - name: format + compare + renumber
         run: |
-          git status --porcelain
-          crs-toolchain regex format --all
+          crs-toolchain regex format -aco github
+          crs-toolchain regex compare -ao github
+          crs-toolchain util renumber-tests -cao github
           git status --porcelain
           git diff --stat
       - name: commit
         run: |
           git config user.name "kosoyyagent"
           git config user.email "kosoyyagent@users.noreply.github.com"
-          git add -A -- regex-assembly
-          git diff --cached --quiet || git commit -m "chore(formatting): crs-toolchain format --all"
+          git add -A -- regex-assembly rules tests
+          git diff --cached --quiet || git commit -m "chore(formatting): crs-toolchain 2.6.0 format+compare+renumber"
           git push origin HEAD:${{ inputs.branch }}
