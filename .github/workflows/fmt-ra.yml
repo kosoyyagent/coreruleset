@@ -14,15 +14,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.branch }}
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
       - name: install crs-toolchain
-        run: go install github.com/coreruleset/crs-toolchain/v2/cmd/crs-toolchain@latest
+        run: |
+          curl -sL -o t.tgz https://github.com/coreruleset/crs-toolchain/releases/download/v2.10.0/crs-toolchain_2.10.0_linux_amd64.tar.gz
+          tar xzf t.tgz
+          ./crs-toolchain --version || true
+          sudo mv crs-toolchain /usr/local/bin/ || mv crs-toolchain $HOME/bin/ && mkdir -p $HOME/bin
       - name: format include
         run: |
           cd regex-assembly
-          crs-toolchain regex format mysql-charset-names || true
+          crs-toolchain regex format mysql-charset-names || crs-toolchain regex format --all
+          git status --porcelain
           git diff
       - name: commit
         run: |
